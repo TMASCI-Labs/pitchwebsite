@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TMASCI Labs</title>
+    <style>
+      html, body {
+        margin: 0;
+        background-color: black;
+        overflow: hidden;
+      }
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+      /* Overlay covers everything except the top 1/11 */
+      #fadeOverlay {
+        position: fixed;
+        top: calc(100% / 11);
+        left: 0;
+        width: 100%;
+        height: calc(100% - (100% / 11));
+        background-color: #181818;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+      }
+      /* Centered content text */
+      #contentText {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Proxima Nova', sans-serif;
+        color: white;
+        font-size: 4em;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="bg"></canvas>
+    <div id="fadeOverlay"></div>
+    <div id="contentText">content</div>
+    <script type="module">
+      import * as THREE from 'https://unpkg.com/three@0.152.0/build/three.module.js?module';
+      import { STLLoader } from 'https://unpkg.com/three@0.152.0/examples/jsm/loaders/STLLoader.js?module';
+
+      // Main scene setup
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 30;
+      const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#bg') });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      // Background scene setup
+      const bgScene = new THREE.Scene();
+      const bgCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const bgVertexShader = `
+        varying vec2 vUv;
+        void main(){
+          vUv = uv;
+          gl_Position = vec4(position, 1.0);
+        }
+      `;
+      const bgFragmentShader = `
+        uniform int uMode;
+        uniform vec3 uUniformColor;
+        varying vec2 vUv;
+        void main(){
+          if(uMode == 1){
+            gl_FragColor = vec4(uUniformColor, 1.0);
+          } else {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+          }
+        }
+      `;
+      const bgUniforms = {
+        uMode: { value: 1 },
+        uUniformColor: { value: new THREE.Color(0x000000) }
+      };
+      const bgMaterial = new THREE.ShaderMaterial({
+        vertexShader: bgVertexShader,
+        fragmentShader: bgFragmentShader,
+        uniforms: bgUniforms,
+        depthTest: false,
+        depthWrite: false
+      });
+      const bgGeometry = new THREE.PlaneGeometry(2, 2);
+      const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
+      bgScene.add(bgMesh);
+
+      // Calculate view dimensions for logo placement
+      const d = camera.position.z;
+      const viewHeight = 2 * d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const viewWidth = viewHeight * camera.aspect;
+      const topLeftX = -viewWidth / 2;
+      const topLeftY = viewHeight / 2;
+      const finalLandingX = topLeftX + viewWidth / 16;
+      const finalLandingY = topLeftY - viewHeight / 20;
+
+      // Animation durations (ms)
+      const phase0Duration = 1000;
+      const phase1Duration = 950;
+      const phase2Duration = 800;
+      const phase3Duration = 800;
+      const totalDuration = phase0Duration + phase1Duration + phase2Duration + phase3Duration;
+
+      // Z-axis settings
+      const initialGroupZ = 8;
+      const initialLightZ = 12;
+      const finalLightZ = 10;
+
+      // Set up point light
+      const pointLight = new THREE.PointLight(0xffffff, 1.75);
+      const lightY = topLeftY - viewHeight / 7.5;
+      pointLight.position.set(topLeftX, lightY, initialLightZ);
+      scene.add(pointLight);
+
+      // Logo scaling
+      const referenceWidth = 10000;
+      const S_center = (2 / 3 * window.innerWidth) / referenceWidth;
+      const S_final = (1 / 12 * window.innerWidth) / referenceWidth;
+      const groupScaleAtCenter = S_center / 0.0002;
+      const groupScaleAtFinal = S_final / 0.0002;
+
+      // Create logo group
+      const stlGroup = new THREE.Group();
+      scene.add(stlGroup);
+      stlGroup.position.set(-viewWidth, 0, initialGroupZ);
+      stlGroup.rotation.y = -Math.PI / 2;
+      stlGroup.scale.set(groupScaleAtCenter, groupScaleAtCenter, groupScaleAtCenter);
+
+      const loader = new STLLoader();
+      loader.load('models/TMASCi.stl', geometry => {
+        const material = new THREE.MeshStandardMaterial({ color: 0x000000 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.scale.set(0.0001, 0.0001, 0.0001);
+        stlGroup.add(mesh);
+      });
+      loader.load('models/TMASCI_dot.stl', geometry => {
+        const material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.scale.set(0.0001, 0.0001, 0.0001);
+        stlGroup.add(mesh);
+      });
+
+      // Linear interpolation helper
+      const lerp = (a, b, t) => a + (b - a) * t;
+
+      // Animation loop
+      let startTime = null;
+      let fadeTriggered = false;
+      renderer.autoClear = false;
+      function animate(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+
+        // Background shader update
+        if (elapsed < phase0Duration) {
+          bgUniforms.uMode.value = 1;
+          bgUniforms.uUniformColor.value.set(0x000000);
+        } else if (elapsed < phase0Duration + phase1Duration) {
+          const t = (elapsed - phase0Duration) / phase1Duration;
+          const colVal = lerp(0.0, 0.329, t);
+          bgUniforms.uMode.value = 1;
+          bgUniforms.uUniformColor.value.setRGB(colVal, colVal, colVal);
+        }
+
+        // Logo animation
+        if (elapsed < phase0Duration) {
+          // Logo off-screen
+        } else if (elapsed < phase0Duration + phase1Duration) {
+          const t = (elapsed - phase0Duration) / phase1Duration;
+          stlGroup.position.x = lerp(-viewWidth, 0, t);
+          stlGroup.position.y = 0;
+          stlGroup.position.z = lerp(initialGroupZ, 0, t);
+          stlGroup.rotation.y = lerp(-Math.PI / 2, 0, t);
+        } else if (elapsed < phase0Duration + phase1Duration + phase2Duration) {
+          stlGroup.position.set(0, 0, 0);
+          stlGroup.rotation.y = 0;
+          stlGroup.scale.set(groupScaleAtCenter, groupScaleAtCenter, groupScaleAtCenter);
+        } else if (elapsed < totalDuration) {
+          const t = (elapsed - phase0Duration - phase1Duration - phase2Duration) / phase3Duration;
+          stlGroup.position.x = lerp(0, finalLandingX, t);
+          stlGroup.position.y = lerp(0, finalLandingY, t);
+          stlGroup.position.z = 0;
+          const groupScale = lerp(groupScaleAtCenter, groupScaleAtFinal, t);
+          stlGroup.scale.set(groupScale, groupScale, groupScale);
+          pointLight.position.z = lerp(initialLightZ, finalLightZ, t);
+        } else {
+          stlGroup.position.set(finalLandingX, finalLandingY, 0);
+          stlGroup.scale.set(groupScaleAtFinal, groupScaleAtFinal, groupScaleAtFinal);
+          stlGroup.rotation.y = 0;
+          pointLight.position.z = finalLightZ;
+
+          // Trigger fade overlay and content text once when animation finishes
+          if (!fadeTriggered) {
+            document.getElementById('fadeOverlay').style.opacity = '1';
+            document.getElementById('contentText').style.opacity = '1';
+            fadeTriggered = true;
+          }
+        }
+
+        renderer.clear();
+        renderer.render(bgScene, bgCamera);
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    </script>
+  </body>
+</html>
