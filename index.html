@@ -17,7 +17,9 @@
       html {
         scroll-behavior: smooth;
       }
-      /* Fullscreen canvas for the 3D animation (logo) */
+      /* Canvas for the 3D logo animation.
+         Initially, pointer events are enabled for interactivity during the animation.
+         They will be disabled (via JS) after the animation so that page elements can capture hover events. */
       canvas {
         position: fixed;
         top: 0;
@@ -25,19 +27,18 @@
         width: 100%;
         height: 100%;
         z-index: 10;
-        pointer-events: auto; /* allow clicking */
+        pointer-events: auto;
       }
-      /* Navigation Menu fixed at the top (occupies 37.5vh) */
+      /* Navigation Menu fixed at the top */
       header {
         position: fixed;
         top: 0;
         right: 0;
         width: 100%;
-        height: 37.5vh;
+        height: 25vh;
         z-index: 20;
         padding: 1vh 2vw;
         box-sizing: border-box;
-        /* No background so STL logo remains visible */
         opacity: 0;
         transition: opacity 0.5s ease-in;
       }
@@ -49,9 +50,8 @@
         justify-content: flex-end;
         gap: 2vw;
       }
-      /* Brighter navigation links in bright red (#FF0000) */
       header nav ul li a {
-        color: #FF0000;
+        color: #ff0000;
         text-decoration: none;
         font-weight: bold;
         font-size: 1.5em;
@@ -59,17 +59,17 @@
       header nav ul li a:hover {
         text-decoration: underline;
       }
-      /* Content Container – starts below the nav bar */
+      /* Content Container – pushed down by 25vh so it doesn't overlap the header */
       #content {
         position: relative;
         z-index: 5;
-        padding-top: calc(37.5vh + 2vh);
+        padding-top: 25vh;
         padding-left: 5vw;
         padding-right: 5vw;
         opacity: 0;
         transition: opacity 0.5s ease-in;
       }
-      /* Increase vertical spacing between sections */
+      /* Hide sections by default */
       #content section {
         display: none;
         margin-bottom: 12vh;
@@ -77,12 +77,7 @@
       #content section.active {
         display: block;
       }
-      /* Move the first section upward slightly */
-      #home {
-        margin-top: -2vh;
-      }
       /* ---------- Home Page Specific Styles ---------- */
-      /* Left block: occupies leftmost 2/3 of the window, 4em font */
       .home-left {
         width: 66.67%;
         font-size: 4em;
@@ -97,14 +92,12 @@
       .home-left .line3 {
         margin-top: 1vh;
       }
-      /* For capitalized words, only the first letter is red */
       .capitalized::first-letter {
         color: red;
       }
       .rest {
         color: white;
       }
-      /* Right block: occupies right half, stacked below left block, 2.5em font */
       .home-right {
         width: 50%;
         margin-left: 50%;
@@ -115,23 +108,20 @@
         margin-top: 3vh;
         margin-bottom: 6vh;
       }
-      /* Red wireframe link in right block */
       .wireframe-link {
         display: inline-block;
-        border: 0.2vh solid red;
+        border: 2px solid red;
         padding: 1vh 1vw;
         text-decoration: none;
         color: red;
         margin-top: 1vh;
         font-size: 1em;
       }
-      /* Full-width statement with centered text */
       .home-full {
         font-size: 4em;
         text-align: center;
         margin: 8vh 0;
       }
-      /* Subsection paragraphs (limited to 62.5vw) */
       .home-subsection {
         font-size: 2.5em;
         color: lightgrey;
@@ -139,7 +129,6 @@
         text-align: left;
         margin-bottom: 6vh;
       }
-      /* Two side-by-side links in red wireframe boxes */
       .home-links {
         display: flex;
         gap: 2vw;
@@ -148,74 +137,74 @@
       .home-links a {
         flex: 1;
         text-align: center;
-        border: 0.2vh solid red;
+        border: 2px solid red;
         padding: 1vh 1vw;
         text-decoration: none;
         color: red;
         font-size: 1em;
       }
-      /* ---------- Business Model Page Styles (unchanged) ---------- */
+      /* ---------- Business Model Page Styles ---------- */
       .business-container {
         display: flex;
         justify-content: space-around;
-        margin-top: 2vh;
+        margin-top: 20px;
       }
+      /* Business model cards: each starts with equal flex value */
       .card {
         flex: 1;
-        margin: 1vh;
+        margin: 10px;
         background-color: #3e3636;
-        padding: 2vh 2vw;
-        border-radius: 1vh;
+        padding: 20px;
+        border-radius: 10px;
         text-align: center;
         cursor: pointer;
         transition: flex 0.3s ease, transform 0.3s ease;
-        position: relative;
         overflow: hidden;
       }
+      /* Expand a card when hovered (and contract siblings) */
       .card:hover {
         flex: 3;
         transform: scale(1.05);
       }
       .card h3 {
-        color: red;
         margin: 0;
-        padding-bottom: 1vh;
-        border-bottom: 0.2vh solid #D72323;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #d72323;
+        color: red;
+        text-align: center;
       }
-      .card li {
-        color: white;
-      }
+      /* Nested content (subsections) are hidden by default */
       .subsections {
         opacity: 0;
         max-height: 0;
         overflow: hidden;
         transition: opacity 0.3s ease, max-height 0.3s ease;
-        margin-top: 1vh;
+        margin-top: 10px;
       }
+      /* Reveal nested content when the card is hovered */
       .card:hover .subsections {
         opacity: 1;
-        max-height: 50vh;
+        max-height: 500px;
       }
       .subsections ul {
         list-style: none;
         padding: 0;
-        margin: 1vh 0 0 0;
+        margin: 10px 0 0;
       }
       .subsections li {
-        margin: 0.5vh 0;
-        position: relative;
+        margin: 5px 0;
+        text-align: center;
       }
       .item-description {
         max-height: 0;
         opacity: 0;
         overflow: hidden;
         transition: max-height 0.3s ease, opacity 0.3s ease;
-        margin-top: 0.5vh;
+        margin-top: 5px;
         font-size: 0.9em;
-        color: lightgrey;
       }
       .list-item:hover .item-description {
-        max-height: 10vh;
+        max-height: 100px;
         opacity: 1;
       }
       /* ---------- Methods Page Styling ---------- */
@@ -256,7 +245,6 @@
     <div id="content">
       <!-- Home Page -->
       <section id="home" class="active">
-        <!-- First block: leftmost 2/3 -->
         <div class="home-left">
           <div class="line">TMASCI Lab conducts research in the</div>
           <div class="line">Arts &amp; Humanities at Berkeley using</div>
@@ -271,22 +259,19 @@
             <span class="capitalized">I<span class="rest">nquiry</span></span>.
           </div>
         </div>
-        <!-- Second block: right half, stacked below the first block -->
         <div class="home-right">
-          Ours is a new methodology for academic<br>
-          discourse in the Arts &amp; Humanities,<br>
-          integrating STEM Practices and Alternative<br>
-          Thesis work concerning Radical Traditions<br>
-          of Philosophical Critique.<br><br>
+          Ours is a new methodology for academic<br />
+          discourse in the Arts &amp; Humanities,<br />
+          integrating STEM Practices and Alternative<br />
+          Thesis work concerning Radical Traditions<br />
+          of Philosophical Critique.<br /><br />
           <a class="wireframe-link" href="#" data-section="methods">
             Learn more about our <strong>Methods</strong> →
           </a>
         </div>
-        <!-- Full-width statement -->
         <div class="home-full">
           We started TMASCI to support the Arts &amp; Humanities in today's rapidly changing technological and economic landscape.
         </div>
-        <!-- Subsection paragraphs -->
         <div class="home-subsection">
           <p>
             Presently, governmental funding has grown unstable, and public access to AI has changed modern students' needs and abilities. While the Humanities are adapting to this changing climate, valuable traditions of deep study in the Humanities are at risk of falling to the wayside.
@@ -295,14 +280,13 @@
             TMASCI exists to extend financial support to the Arts &amp; Humanities at the University and to train students early in their careers in both technical proficiency and deep critical research through our Academic Partnerships.
           </p>
         </div>
-        <!-- Two side-by-side links -->
         <div class="home-links">
           <a href="#" data-section="business-model">
-            Learn more about our<br>
+            Learn more about our<br />
             Business and Financial Model →
           </a>
           <a href="#" data-section="student-research">
-            Learn more about how<br>
+            Learn more about how<br />
             we support Students at the University →
           </a>
         </div>
@@ -327,18 +311,6 @@
         <p class="methods-content">
           Through the development of the alternative scholarship portion of the research, students get hands on experience developing technical skills. For example, students who have little to no programming experience might find themselves working on a project that has a software component, opening the door for them to learn Computer Science principles from TMASCI training and collaboration with their project teammates.
         </p>
-        <h2 class="methods-heading">Low Residency</h2>
-        <h3 class="methods-subheading">Why Low Residency?</h3>
-        <p class="methods-content">
-          TMASCI Operates on the Low Residency model, which is basically research done as remote work. There is no brick &amp; mortar TMASCI Lab on campus, but rather a body of researchers who collaborate remotely or in person. This allows us to collaborate more effectively, as well as cuts costs.
-        </p>
-        <h3 class="methods-subheading">On Campus Academic Partnership</h3>
-        <p class="methods-content">
-          For aspects of research and development which require computing, recording, performing, fabricating, or hosting facilities, we turn to centers at the University capable of facilitating our researchers’ work.
-        </p>
-        <p class="methods-content">
-          Through this aspect of our Academic Partnership with the University, we make use of services at the University that are often underutilized, and simultaneously pump funding back into the staff and facilities which support our research. As such, TMASCI serves as infrastructure for routing funds from our Industry Connections to underfunded staff and programs at the University.
-        </p>
       </section>
       <!-- Student Research Page -->
       <section id="student-research">
@@ -353,8 +325,8 @@
       </section>
       <!-- Business Model Page -->
       <section id="business-model">
-        <h1>Business Model</h1>
-        <p>here's our business model:</p>
+        <h1 style="text-align: center;">Business Model</h1>
+        <p style="text-align: center;">Here's our business model:</p>
         <div class="business-container">
           <!-- University Card -->
           <div class="card" id="university">
@@ -364,25 +336,25 @@
                 <li class="list-item">
                   Staff
                   <div class="item-description">
-                    Description for Staff: Provides academic support and expertise.
+                    Provides academic support and expertise.
                   </div>
                 </li>
                 <li class="list-item">
                   Facilities
                   <div class="item-description">
-                    Description for Facilities: Includes labs, libraries, and study areas.
+                    Includes labs, libraries, and study areas.
                   </div>
                 </li>
                 <li class="list-item">
                   Administration
                   <div class="item-description">
-                    Description for Administration: Manages day-to-day operations.
+                    Manages day-to-day operations.
                   </div>
                 </li>
                 <li class="list-item">
                   Students
                   <div class="item-description">
-                    Description for Students: Engaged in research and learning activities.
+                    Engaged in research and learning activities.
                   </div>
                 </li>
               </ul>
@@ -396,25 +368,25 @@
                 <li class="list-item">
                   PI
                   <div class="item-description">
-                    Description for PI: Principal Investigator leading research projects.
+                    Principal Investigator leading projects.
                   </div>
                 </li>
                 <li class="list-item">
                   Student Administration
                   <div class="item-description">
-                    Description for Student Administration: Coordinates student involvement.
+                    Coordinates student involvement.
                   </div>
                 </li>
                 <li class="list-item">
                   Research Associates
                   <div class="item-description">
-                    Description for Research Associates: Experts collaborating on projects.
+                    Experts collaborating on projects.
                   </div>
                 </li>
                 <li class="list-item">
                   ASRPs
                   <div class="item-description">
-                    Description for ASRPs: Assistant researchers supporting research efforts.
+                    Assistant researchers supporting efforts.
                   </div>
                 </li>
               </ul>
@@ -428,43 +400,43 @@
                 <li class="list-item">
                   Board of Directors
                   <div class="item-description">
-                    Description for Board of Directors: Oversees the organization's strategic direction.
+                    Oversees strategic direction.
                   </div>
                 </li>
                 <li class="list-item">
                   Advisory Board
                   <div class="item-description">
-                    Description for Advisory Board: Provides expert guidance and advice.
+                    Provides expert guidance and advice.
                   </div>
                 </li>
                 <li class="list-item">
                   Industrial Advisory Board
                   <div class="item-description">
-                    Description for Industrial Advisory Board: Connects industry insights.
+                    Connects industry insights.
                   </div>
                 </li>
                 <li class="list-item">
                   Academic Advisory Board
                   <div class="item-description">
-                    Description for Academic Advisory Board: Ensures academic rigor and relevance.
+                    Ensures academic rigor and relevance.
                   </div>
                 </li>
                 <li class="list-item">
                   Review Board
                   <div class="item-description">
-                    Description for Review Board: Evaluates proposals and research outcomes.
+                    Evaluates proposals and outcomes.
                   </div>
                 </li>
                 <li class="list-item">
                   Publication Committee
                   <div class="item-description">
-                    Description for Publication Committee: Manages publications and dissemination.
+                    Manages publications and dissemination.
                   </div>
                 </li>
                 <li class="list-item">
                   ASRP Management Committee
                   <div class="item-description">
-                    Description for ASRP Management Committee: Oversees assistant researcher programs.
+                    Oversees assistant researcher programs.
                   </div>
                 </li>
               </ul>
@@ -478,11 +450,11 @@
         <p>email us at tmascilab@gmail.com</p>
       </section>
     </div>
-    <!-- JavaScript for Animation, Navigation, Scroll-Clip, and Logo Click -->
+    <!-- JavaScript for Animation, Navigation, and Canvas Pointer Event Control -->
     <script type="module">
       import * as THREE from 'https://unpkg.com/three@0.152.0/build/three.module.js?module';
       import { STLLoader } from 'https://unpkg.com/three@0.152.0/examples/jsm/loaders/STLLoader.js?module';
-
+      
       // --- Three.js Animation Setup ---
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
@@ -499,7 +471,7 @@
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setClearColor(0x000000, 0); // transparent background
-
+      
       // --- Background Shader Scene ---
       const bgScene = new THREE.Scene();
       const bgCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -536,7 +508,7 @@
       const bgGeometry = new THREE.PlaneGeometry(2, 2);
       const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
       bgScene.add(bgMesh);
-
+      
       // --- Determine Logo Placement ---
       const d = camera.position.z;
       const viewHeight = 2 * d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
@@ -545,39 +517,39 @@
       const topLeftY = viewHeight / 2;
       const finalLandingX = topLeftX + viewWidth / 16;
       const finalLandingY = topLeftY - viewHeight / 20;
-
+      
       // --- Animation Durations (ms) ---
       const phase0Duration = 1000;
       const phase1Duration = 950;
       const phase2Duration = 800;
       const phase3Duration = 800;
       const totalDuration = phase0Duration + phase1Duration + phase2Duration + phase3Duration;
-
+      
       // --- Z-Axis Settings ---
       const initialGroupZ = 8;
       const initialLightZ = 12;
       const finalLightZ = 10;
-
+      
       // --- Point Light ---
       const pointLight = new THREE.PointLight(0xffffff, 1.75);
       const lightY = topLeftY - viewHeight / 7.5;
       pointLight.position.set(topLeftX, lightY, initialLightZ);
       scene.add(pointLight);
-
+      
       // --- Scaling Factors for the Logo ---
       const referenceWidth = 10000;
       const S_center = (2 / 3 * window.innerWidth) / referenceWidth;
       const S_final = (1 / 12 * window.innerWidth) / referenceWidth;
       const groupScaleAtCenter = S_center / 0.0002;
       const groupScaleAtFinal = S_final / 0.0002;
-
+      
       // --- Create STL Logo Group ---
       const stlGroup = new THREE.Group();
       scene.add(stlGroup);
       stlGroup.position.set(-viewWidth, 0, initialGroupZ);
       stlGroup.rotation.y = -Math.PI / 2;
       stlGroup.scale.set(groupScaleAtCenter, groupScaleAtCenter, groupScaleAtCenter);
-
+      
       const loader = new STLLoader();
       loader.load('models/TMASCi.stl', geometry => {
         const material = new THREE.MeshStandardMaterial({ color: 0x000000 });
@@ -591,15 +563,16 @@
         mesh.scale.set(0.0001, 0.0001, 0.0001);
         stlGroup.add(mesh);
       });
-
+      
       // --- Helper for Linear Interpolation ---
       const lerp = (a, b, t) => a + (b - a) * t;
       let startTime = null;
       let animationCompleted = false;
+      
       function animate(timestamp) {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
-
+      
         if (elapsed < totalDuration) {
           if (elapsed < phase0Duration) {
             bgUniforms.uMode.value = 1;
@@ -637,6 +610,8 @@
             animationCompleted = true;
             document.getElementById('content').style.opacity = '1';
             document.querySelector('header').style.opacity = '1';
+            // Disable pointer events on the canvas so that underlying content receives hover events
+            document.querySelector('#bg').style.pointerEvents = 'none';
           }
           renderer.setClearColor(0x000000, 0);
           renderer.clear();
@@ -645,21 +620,8 @@
         requestAnimationFrame(animate);
       }
       requestAnimationFrame(animate);
-
-      // --- Scroll-Clip Effect ---
-      window.addEventListener('scroll', () => {
-        // New threshold: 1/8th (12.5%) of the viewport height
-        const threshold = window.innerHeight / 8;
-        const content = document.getElementById('content');
-        const rect = content.getBoundingClientRect();
-        if (rect.top < threshold) {
-          content.style.clipPath = `inset(${threshold - rect.top}px 0 0 0)`;
-        } else {
-          content.style.clipPath = 'none';
-        }
-      });
-
-      // --- Navigation Content Switching ---
+      
+      // --- Navigation Content Switching & Scroll-to-Top ---
       const navLinks = document.querySelectorAll(
         'header nav ul li a, .wireframe-link, .home-links a'
       );
@@ -673,10 +635,11 @@
             });
             document.getElementById(targetSection).classList.add('active');
           }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       });
-
-      // --- Click on STL Logo to Scroll to Top ---
+      
+      // --- Click on STL Logo (canvas) to Scroll to Top ---
       document.querySelector('#bg').addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
