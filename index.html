@@ -6,20 +6,92 @@
     <title>TMASCI Labs</title>
     <style>
       /* Global Styles */
+      html {
+        /* Significantly reduced responsive font sizing */
+        font-size: calc(0.5vw + 0.5vh + 0.5vmin);
+        scroll-behavior: smooth;
+      }
       body {
         margin: 0;
+        overflow-x: hidden; /* Prevent horizontal scrolling */
         background-color: #3e3636;
         font-family: 'Proxima Nova', sans-serif;
         line-height: 1.8;
         letter-spacing: 0.8px;
         color: #f5eded;
       }
-      html {
-        scroll-behavior: smooth;
+
+      /* Background Containers */
+      #main-bg-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 95%;
+        height: 130%;
+        background-image: url('models/TMASCI_Homepage_BG.png');
+        background-repeat: no-repeat;
+        background-position: right;
+        background-size: 30%;
+        z-index: 1;
+        opacity: 0; /* Start hidden */
+        transition: opacity 0.2s ease-in; /* Fade-in transition */
       }
-      /* Canvas for the 3D logo animation.
-         Initially, pointer events are enabled for interactivity during the animation.
-         They will be disabled (via JS) after the animation so that page elements can capture hover events. */
+      /* Added a left margin of 1vw for the 2nd background image */
+      #bottom-left-bg-container {
+        position: fixed;
+        bottom: 0;
+        left: 1vw;
+        width: calc(100% - 1vw);
+        height: 50%;
+        background-image: url('models/TMASCI_Homepage_BG_2.png');
+        background-repeat: no-repeat;
+        background-size: 30%;
+        z-index: 1;
+        opacity: 0; /* Start hidden */
+        transition: opacity 0.2s ease-in; /* Fade-in transition */
+      }
+
+      /* Text Color Classes */
+      .whitetext {
+        color: #f5eded;
+      }
+      .redtext {
+        color: #da0037;
+      }
+      .lightgreytext {
+        color: lightgrey;
+      }
+
+      /* Background Option Classes for Text Blocks */
+      .bg-transparent {
+        background-color: transparent;
+      }
+      .bg-translucent-black {
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+      .bg-translucent-white {
+        background-color: rgba(255, 255, 255, 0.5);
+        color: black;
+      }
+      .bg-translucent-lightgrey {
+        background-color: rgba(109, 109, 109, 0.5);
+      }
+
+      /* Default Text Block Styling (no border outlines) */
+      .textblock {
+        border: none;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 1em;
+      }
+
+      /* Fade-in transitions */
+      header,
+      #content {
+        transition: opacity 0.2s ease-in;
+      }
+
+      /* Canvas for the 3D logo animation */
       canvas {
         position: fixed;
         top: 0;
@@ -29,18 +101,18 @@
         z-index: 10;
         pointer-events: auto;
       }
+
       /* Navigation Menu fixed at the top */
       header {
         position: fixed;
         top: 0;
         right: 0;
         width: 100%;
-        height: 25vh;
+        height: 12vh;
         z-index: 20;
         padding: 1vh 2vw;
         box-sizing: border-box;
         opacity: 0;
-        transition: opacity 0.5s ease-in;
       }
       header nav ul {
         list-style: none;
@@ -51,105 +123,105 @@
         gap: 2vw;
       }
       header nav ul li a {
-        color: #ff0000;
+        color: #da0037;
         text-decoration: none;
         font-weight: bold;
-        font-size: 1.5em;
+        font-size: 1.2em; /* Reduced font size for nav links */
       }
       header nav ul li a:hover {
         text-decoration: underline;
       }
-      /* Content Container – pushed down by 25vh so it doesn't overlap the header */
+
+      /* Content Container – note that the background image has been removed */
       #content {
-        position: relative;
+        position: fixed;
+        top: 10vh;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow-y: auto;
+        background: none;
+        padding: 0 1vw;
         z-index: 5;
-        padding-top: 25vh;
-        padding-left: 5vw;
-        padding-right: 5vw;
         opacity: 0;
-        transition: opacity 0.5s ease-in;
       }
+
       /* Hide sections by default */
       #content section {
         display: none;
+        margin-top: 6vh;
         margin-bottom: 12vh;
       }
       #content section.active {
         display: block;
       }
-      /* ---------- Home Page Specific Styles ---------- */
+
+      /* Homepage Specific Styles */
       .home-left {
-        width: 66.67%;
-        font-size: 4em;
-        color: white;
+        width: %;
+        font-size: 3.3em; /* Slightly decreased from 3.5em */
+        color: inherit;
         line-height: 1.2;
         padding-left: 3vw;
-        margin-bottom: 3vh;
-      }
-      .home-left .line {
-        margin: 0;
-      }
-      .home-left .line3 {
-        margin-top: 1vh;
-      }
-      .capitalized::first-letter {
-        color: red;
-      }
-      .rest {
-        color: white;
+        margin-top: 0;
+        margin-bottom: 10vh; /* Increased margin between text blocks 1 and 2 */
       }
       .home-right {
-        width: 50%;
-        margin-left: 50%;
-        font-size: 2.5em;
+        width: 25%; /* As previously set */
+        margin-left: 65%;
+        font-size: 2em; /* Already decreased */
         color: lightgrey;
         text-align: left;
         line-height: 1.4;
         margin-top: 3vh;
         margin-bottom: 6vh;
       }
-      .wireframe-link {
-        display: inline-block;
-        border: 2px solid red;
-        padding: 1vh 1vw;
-        text-decoration: none;
-        color: red;
-        margin-top: 1vh;
-        font-size: 1em;
-      }
       .home-full {
-        font-size: 4em;
+        font-size: 2.3em; /* Decreased from 2.5em */
         text-align: center;
-        margin: 8vh 0;
+        margin: 14vh 0; /* Significantly increased top margin (gap between text blocks 2 and 3) */
       }
-      .home-subsection {
-        font-size: 2.5em;
-        color: lightgrey;
-        max-width: 62.5vw;
-        text-align: left;
-        margin-bottom: 6vh;
-      }
-      .home-links {
-        display: flex;
+      /* Grid styling for the 2x2 link grid on the homepage */
+      #home-link-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 2vw;
         max-width: 62.5vw;
+        margin: 0 auto;
       }
-      .home-links a {
-        flex: 1;
+      #home-link-grid a {
         text-align: center;
-        border: 2px solid red;
+        border: 2px solid #da0037;
         padding: 1vh 1vw;
         text-decoration: none;
-        color: red;
-        font-size: 1em;
+        color: #da0037;
+        font-size: 1.5em;  /* Increased font size for the links */
+        font-weight: bold; /* Bold text for the links */
       }
-      /* ---------- Business Model Page Styles ---------- */
+
+      /* Existing styles for Methods, Business Model, etc. */
+      .methods-heading {
+        color: #da0037;
+        font-size: 4em;
+        margin-bottom: 1vh;
+      }
+      .methods-subheading {
+        color: #f5eded;
+        font-size: 2.5em;
+        margin-bottom: 1vh;
+      }
+      .methods-content {
+        color: lightgrey;
+        font-size: 1.5em;
+        line-height: 1.4;
+        margin-bottom: 2vh;
+      }
+
       .business-container {
         display: flex;
         justify-content: space-around;
         margin-top: 20px;
       }
-      /* Business model cards: each starts with equal flex value */
       .card {
         flex: 1;
         margin: 10px;
@@ -161,7 +233,6 @@
         transition: flex 0.3s ease, transform 0.3s ease;
         overflow: hidden;
       }
-      /* Expand a card when hovered (and contract siblings) */
       .card:hover {
         flex: 3;
         transform: scale(1.05);
@@ -169,11 +240,10 @@
       .card h3 {
         margin: 0;
         padding-bottom: 10px;
-        border-bottom: 2px solid #d72323;
-        color: red;
+        border-bottom: 2px solid #da0037;
+        color: #da0037;
         text-align: center;
       }
-      /* Nested content (subsections) are hidden by default */
       .subsections {
         opacity: 0;
         max-height: 0;
@@ -181,7 +251,6 @@
         transition: opacity 0.3s ease, max-height 0.3s ease;
         margin-top: 10px;
       }
-      /* Reveal nested content when the card is hovered */
       .card:hover .subsections {
         opacity: 1;
         max-height: 500px;
@@ -207,128 +276,145 @@
         max-height: 100px;
         opacity: 1;
       }
-      /* ---------- Methods Page Styling ---------- */
-      .methods-heading {
-        color: red;
-        font-size: 4em;
-        margin-bottom: 1vh;
-      }
-      .methods-subheading {
-        color: white;
-        font-size: 2.5em;
-        margin-bottom: 1vh;
-      }
-      .methods-content {
-        color: grey;
-        font-size: 1.5em;
-        line-height: 1.4;
-        margin-bottom: 2vh;
+
+      /* Responsive Design: Adjust for mobile screens */
+      @media (max-width: 768px) {
+        .textblock {
+          padding: 15px;
+          margin-bottom: 0.75em;
+          font-size: 0.9em;
+        }
+        #textblock1 {
+          top: 5px;
+          left: 5px;
+        }
       }
     </style>
   </head>
   <body>
+    <!-- New Background Containers -->
+    <div id="main-bg-container"></div>
+    <div id="bottom-left-bg-container"></div>
+
     <!-- Canvas for the 3D logo animation -->
     <canvas id="bg"></canvas>
+
     <!-- Navigation Menu -->
     <header>
       <nav>
         <ul>
           <li><a href="#" data-section="home">Home</a></li>
           <li><a href="#" data-section="methods">Methods</a></li>
-          <li><a href="#" data-section="student-research">Student Research</a></li>
+          <li><a href="#" data-section="research">Research</a></li>
+          <li><a href="#" data-section="academic-partnerships">Academic Partnerships</a></li>
           <li><a href="#" data-section="business-model">Business Model</a></li>
-          <li><a href="#" data-section="contact">Contact Us</a></li>
         </ul>
       </nav>
     </header>
+
     <!-- Content Sections -->
     <div id="content">
       <!-- Home Page -->
       <section id="home" class="active">
-        <div class="home-left">
-          <div class="line">TMASCI Lab conducts research in the</div>
-          <div class="line">Arts &amp; Humanities at Berkeley using</div>
-          <div class="line line3">
-            <span class="capitalized">T<span class="rest">echnical</span></span>
-            <span class="capitalized">M<span class="rest">ethods</span></span>
-            and
-            <span class="capitalized">A<span class="rest">lternative</span></span>
-            <span class="capitalized">S<span class="rest">cholarship</span></span>
-            for
-            <span class="capitalized">C<span class="rest">ritical</span></span>
-            <span class="capitalized">I<span class="rest">nquiry</span></span>.
-          </div>
+        <!-- Text Block 1: 4 lines, always in top left -->
+        <div id="textblock1" class="home-left textblock bg-transparent">
+          <scan class=redtext>TMASCI Lab</scan> conducts research<br>
+          in the Arts & Humanities using<br>
+            <scan class=redtext>T</scan>echnical <scan class=redtext>M</scan>ethods and <scan class=redtext>A</scan>lternative<br>
+          <scan class=redtext>S</scan>cholarship for <scan class=redtext>C</scan>ritical <scan class=redtext>I</scan>nquiry
         </div>
-        <div class="home-right">
-          Ours is a new methodology for academic<br />
-          discourse in the Arts &amp; Humanities,<br />
-          integrating STEM Practices and Alternative<br />
-          Thesis work concerning Radical Traditions<br />
-          of Philosophical Critique.<br /><br />
-          <a class="wireframe-link" href="#" data-section="methods">
-            Learn more about our <strong>Methods</strong> →
-          </a>
+        <!-- Text Block 2: 3 lines -->
+        <div id="textblock2" class="home-right textblock bg-translucent-lightgrey">
+          We use STEM Practices<br>
+          & Alternative Thesis Work<br>
+          for Philosophical Inquiry.
         </div>
-        <div class="home-full">
-          We started TMASCI to support the Arts &amp; Humanities in today's rapidly changing technological and economic landscape.
+        <!-- Text Block 3: 3 lines with decreased font size -->
+        <div id="textblock3" class="home-full textblock bg-translucent-black">
+          A decentralized creative computing lab for
+          researchers engaging radical traditions<br>of
+          social, philosophical, & psychoanalytic critique.
         </div>
-        <div class="home-subsection">
-          <p>
-            Presently, governmental funding has grown unstable, and public access to AI has changed modern students' needs and abilities. While the Humanities are adapting to this changing climate, valuable traditions of deep study in the Humanities are at risk of falling to the wayside.
-          </p>
-          <p>
-            TMASCI exists to extend financial support to the Arts &amp; Humanities at the University and to train students early in their careers in both technical proficiency and deep critical research through our Academic Partnerships.
-          </p>
-        </div>
-        <div class="home-links">
-          <a href="#" data-section="business-model">
-            Learn more about our<br />
-            Business and Financial Model →
-          </a>
-          <a href="#" data-section="student-research">
-            Learn more about how<br />
-            we support Students at the University →
-          </a>
+        <!-- 2x2 Grid of Links with increased font size and bold text -->
+        <div id="home-link-grid" class="home-links textblock bg-translucent-lightgrey">
+          <a href="#" data-section="research">Read about Our Research</a>
+          <a href="#" data-section="methods">Read about Our Methods</a>
+          <a href="#" data-section="academic-partnerships">Read about How We Support our Academic Partners</a>
+          <a href="#" data-section="business-model">View Our Business Model</a>
         </div>
       </section>
-      <!-- Methods Page -->
+
+      <!-- Methods Page (unchanged) -->
       <section id="methods">
-        <h2 class="methods-heading">The Nature of TMASCI Research</h2>
-        <h3 class="methods-subheading">What is an ASRP?</h3>
-        <p class="methods-content">
-          TMASCI Lab conducts Alternative Scholarship Research Projects (ASRPs). A team of student researchers collaborates to conduct research and develop alternative thesis work. This means research may take the form of a VR program, an installation, or a performance piece, rather than culminating in a plain text essay.
-        </p>
-        <p class="methods-content">
-          The challenge of this creative, and often messy, component of research drives the originality and rigor of the work. It allows our researchers to wrestle with topics that are often inarticulable. At TMASCI, we believe it’s not just what you’re saying, but how you’re saying it that really matters. As such, we consider our research and development methods as performative in our approach.
-        </p>
-        <h3 class="methods-subheading">How are ASRPs conducted?</h3>
-        <p class="methods-content">
-          Each ASRP team is managed by a Project Lead Team Member in collaboration with a TMASCI Case Manager. Case Managers act as a liaison between the lab’s PI (Principal Investigator) and the research team. Case Managers have the additional support of a TMASCI employed ASRP Subcommittee.
-        </p>
-        <p class="methods-content">
-          Through all this involvement, the collaborative spirit of ASRPs can come through. Different people in the network of an ASRP bring different areas of expertise to the project as it matures. This collaboration opens the door for training student researchers in different aspects of project completion.
-        </p>
-        <p class="methods-content">
-          Through the development of the alternative scholarship portion of the research, students get hands on experience developing technical skills. For example, students who have little to no programming experience might find themselves working on a project that has a software component, opening the door for them to learn Computer Science principles from TMASCI training and collaboration with their project teammates.
-        </p>
+        <div id="textblock6" class="textblock">
+          <h2 class="methods-heading">The Nature of TMASCI Research</h2>
+        </div>
+        <div id="textblock7" class="textblock">
+          <h3 class="methods-subheading">What is an ASRP?</h3>
+        </div>
+        <div id="textblock8" class="textblock">
+          <p class="methods-content">
+            TMASCI Lab conducts Alternative Scholarship Research Projects (ASRPs). A team of student researchers collaborates to conduct research and develop alternative thesis work. This means research may take the form of a VR program, an installation, or a performance piece, rather than culminating in a plain text essay.
+          </p>
+        </div>
+        <div id="textblock9" class="textblock">
+          <p class="methods-content">
+            The challenge of this creative, and often messy, component of research drives the originality and rigor of the work. It allows our researchers to wrestle with topics that are often inarticulable. At TMASCI, we believe it’s not just what you’re saying, but how you’re saying it that really matters. As such, we consider our research and development methods as performative in our approach.
+          </p>
+        </div>
+        <div id="textblock10" class="textblock">
+          <h3 class="methods-subheading">How are ASRPs conducted?</h3>
+        </div>
+        <div id="textblock11" class="textblock">
+          <p class="methods-content">
+            Each ASRP team is managed by a Project Lead Team Member in collaboration with a TMASCI Case Manager. Case Managers act as a liaison between the lab’s PI (Principal Investigator) and the research team. Case Managers have the additional support of a TMASCI employed ASRP Subcommittee.
+          </p>
+        </div>
+        <div id="textblock12" class="textblock">
+          <p class="methods-content">
+            Through all this involvement, the collaborative spirit of ASRPs can come through. Different people in the network of an ASRP bring different areas of expertise to the project as it matures. This collaboration opens the door for training student researchers in different aspects of project completion.
+          </p>
+        </div>
+        <div id="textblock13" class="textblock">
+          <p class="methods-content">
+            Through the development of the alternative scholarship portion of the research, students get hands on experience developing technical skills. For example, students who have little to no programming experience might find themselves working on a project that has a software component, opening the door for them to learn Computer Science principles from TMASCI training and collaboration with their project teammates.
+          </p>
+        </div>
       </section>
-      <!-- Student Research Page -->
-      <section id="student-research">
-        <h1>Student Research</h1>
-        <h3>We Provide Arts &amp; Humanities Students with…</h3>
-        <ul>
-          <li>Research opportunities in Critical Inquiry</li>
-          <li>Rigorous training in using technical methods and alternative scholarship to complete thesis work</li>
-          <li>Organizational support from project planning all the way through R&amp;D and documentation</li>
-          <li>Publication and career opportunities through our services and our network</li>
-        </ul>
+
+      <!-- Research Page (Filler Content) -->
+      <section id="research">
+        <div id="textblock14" class="textblock">
+          <h1>Research</h1>
+        </div>
+        <div id="textblock15" class="textblock">
+          <p>Filler content for the Research page goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus interdum.</p>
+        </div>
       </section>
-      <!-- Business Model Page -->
+
+      <!-- Academic Partnerships Page (Filler Content) -->
+      <section id="academic-partnerships">
+        <div id="textblock16" class="textblock">
+          <h1>Academic Partnerships</h1>
+        </div>
+        <div id="textblock17" class="textblock">
+          <p>Filler content for Academic Partnerships goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</p>
+        </div>
+      </section>
+
+      <!-- Business Model Page (Modified alignment) -->
       <section id="business-model">
-        <h1 style="text-align: center;">Business Model</h1>
-        <p style="text-align: center;">Through our own independent fundraising efforts through our Industry Connections, TMASCI funds its own operations and finances its Academic Partnership with the University.</p>
-        <p style="text-align: center;">We propose an Academic Partnership between the following three entities: UC Berkeley, a TMASCI Research Institute at Berkeley, and the broader TMASCI Labs 501c3</p>
-        <div class="business-container">
+        <div id="textblock18" class="textblock">
+          <h1 style="text-align: center;">Business Model</h1>
+        </div>
+        <div id="textblock19" class="textblock">
+          <p style="text-align: left;">
+            Through our own independent fundraising efforts through our Industry Connections, TMASCI funds its own operations and finances its Academic Partnership with the University.
+          </p><p>
+            We propose an Academic Partnership between the following three entities: UC Berkeley, a TMASCI Research Institute at Berkeley, and the broader TMASCI Labs 501c3
+          </p>
+        </div>
+        <div id="textblock21" class="business-container">
           <!-- University Card -->
           <div class="card" id="university">
             <h3>University</h3>
@@ -401,7 +487,7 @@
                 <li class="list-item">
                   Board of Directors
                   <div class="item-description">
-                    Executive management of TMASCI Labs 5013c.
+                    Executive management of TMASCI Labs 501c3.
                   </div>
                 </li>
                 <li class="list-item">
@@ -425,7 +511,7 @@
                 <li class="list-item">
                   Review Board
                   <div class="item-description">
-                    A board of TMASCI Employees who review ASRPs at pivotal moments and advise. 
+                    A board of TMASCI Employees who review ASRPs at pivotal moments and advise.
                   </div>
                 </li>
                 <li class="list-item">
@@ -445,17 +531,13 @@
           </div>
         </div>
       </section>
-      <!-- Contact Us Page -->
-      <section id="contact">
-        <h1>Contact Us</h1>
-        <p>Interest forms coming soon! For now, you can email us at tmascilab@gmail.com</p>
-      </section>
     </div>
+
     <!-- JavaScript for Animation, Navigation, and Canvas Pointer Event Control -->
     <script type="module">
       import * as THREE from 'https://unpkg.com/three@0.152.0/build/three.module.js?module';
       import { STLLoader } from 'https://unpkg.com/three@0.152.0/examples/jsm/loaders/STLLoader.js?module';
-      
+
       // --- Three.js Animation Setup ---
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
@@ -472,19 +554,18 @@
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setClearColor(0x000000, 0); // transparent background
-      
+
       // --- Background Shader Scene ---
       const bgScene = new THREE.Scene();
       const bgCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-      const bgVertexShader = `
-        varying vec2 vUv;
+      const bgVertexShader = 
+        `varying vec2 vUv;
         void main(){
           vUv = uv;
           gl_Position = vec4(position, 1.0);
-        }
-      `;
-      const bgFragmentShader = `
-        uniform int uMode;
+        }`;
+      const bgFragmentShader = 
+        `uniform int uMode;
         uniform vec3 uUniformColor;
         varying vec2 vUv;
         void main(){
@@ -493,8 +574,7 @@
           } else {
             gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
           }
-        }
-      `;
+        }`;
       const bgUniforms = {
         uMode: { value: 1 },
         uUniformColor: { value: new THREE.Color(0x000000) }
@@ -509,7 +589,7 @@
       const bgGeometry = new THREE.PlaneGeometry(2, 2);
       const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
       bgScene.add(bgMesh);
-      
+
       // --- Determine Logo Placement ---
       const d = camera.position.z;
       const viewHeight = 2 * d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
@@ -518,39 +598,39 @@
       const topLeftY = viewHeight / 2;
       const finalLandingX = topLeftX + viewWidth / 16;
       const finalLandingY = topLeftY - viewHeight / 20;
-      
+
       // --- Animation Durations (ms) ---
       const phase0Duration = 1000;
       const phase1Duration = 950;
       const phase2Duration = 800;
       const phase3Duration = 800;
       const totalDuration = phase0Duration + phase1Duration + phase2Duration + phase3Duration;
-      
+
       // --- Z-Axis Settings ---
       const initialGroupZ = 8;
       const initialLightZ = 12;
       const finalLightZ = 10;
-      
+
       // --- Point Light ---
       const pointLight = new THREE.PointLight(0xffffff, 1.75);
       const lightY = topLeftY - viewHeight / 7.5;
       pointLight.position.set(topLeftX, lightY, initialLightZ);
       scene.add(pointLight);
-      
+
       // --- Scaling Factors for the Logo ---
       const referenceWidth = 10000;
       const S_center = (2 / 3 * window.innerWidth) / referenceWidth;
       const S_final = (1 / 12 * window.innerWidth) / referenceWidth;
       const groupScaleAtCenter = S_center / 0.0002;
       const groupScaleAtFinal = S_final / 0.0002;
-      
+
       // --- Create STL Logo Group ---
       const stlGroup = new THREE.Group();
       scene.add(stlGroup);
       stlGroup.position.set(-viewWidth, 0, initialGroupZ);
       stlGroup.rotation.y = -Math.PI / 2;
       stlGroup.scale.set(groupScaleAtCenter, groupScaleAtCenter, groupScaleAtCenter);
-      
+
       const loader = new STLLoader();
       loader.load('models/TMASCi.stl', geometry => {
         const material = new THREE.MeshStandardMaterial({ color: 0x000000 });
@@ -564,16 +644,16 @@
         mesh.scale.set(0.0001, 0.0001, 0.0001);
         stlGroup.add(mesh);
       });
-      
+
       // --- Helper for Linear Interpolation ---
       const lerp = (a, b, t) => a + (b - a) * t;
       let startTime = null;
       let animationCompleted = false;
-      
+
       function animate(timestamp) {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
-      
+
         if (elapsed < totalDuration) {
           if (elapsed < phase0Duration) {
             bgUniforms.uMode.value = 1;
@@ -609,8 +689,12 @@
         } else {
           if (!animationCompleted) {
             animationCompleted = true;
+            // Fade in content sooner (the transition now lasts 0.2s)
             document.getElementById('content').style.opacity = '1';
             document.querySelector('header').style.opacity = '1';
+            // Also fade in the background images
+            document.getElementById('main-bg-container').style.opacity = '1';
+            document.getElementById('bottom-left-bg-container').style.opacity = '1';
             // Disable pointer events on the canvas so that underlying content receives hover events
             document.querySelector('#bg').style.pointerEvents = 'none';
           }
@@ -621,7 +705,7 @@
         requestAnimationFrame(animate);
       }
       requestAnimationFrame(animate);
-      
+
       // --- Navigation Content Switching & Scroll-to-Top ---
       const navLinks = document.querySelectorAll(
         'header nav ul li a, .wireframe-link, .home-links a'
@@ -639,7 +723,7 @@
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       });
-      
+
       // --- Click on STL Logo (canvas) to Scroll to Top ---
       document.querySelector('#bg').addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
